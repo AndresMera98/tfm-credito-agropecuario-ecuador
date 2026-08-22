@@ -26,7 +26,7 @@ st.set_page_config(
 
 st.title("🌾 Crédito Público Agropecuario en Ecuador")
 st.markdown(
-    "**Dashboard de priorización territorial** basado en datos del MAG (2013-2026) "
+    "**Dashboard de priorización territorial** basado en datos del MAG (2013-2025) "
     "y NBI del Censo 2022 (INEC). Permite identificar qué provincias tienen mayor "
     "brecha entre su nivel de pobreza y el crédito público recibido."
 )
@@ -433,4 +433,5 @@ st.markdown(
     "**Fuentes**: MAG — Crédito público agropecuario (2026) | "
     "INEC — Censo de Población y Vivienda 2022 | "
     "Elaboración propia como parte del TFM — UCM Data Science & Business Analytics"
+    "[📂 Código fuente](https://github.com/AndresMera98/tfm-credito-agropecuario-ecuador)"
 )
