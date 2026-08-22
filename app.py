@@ -95,10 +95,11 @@ def cargar_geojson():
 
     return gdf_prov
 
-def procesar_mag(df_mag_raw):
+def procesar_mag(df_mag_raw, incluir_anio_incompleto=False):
     """
     Limpia y procesa el CSV del MAG.
-    Acepta el DataFrame crudo y devuelve el dataset limpio.
+    incluir_anio_incompleto=True: incluye todos los años (cuando el usuario sube un archivo)
+    incluir_anio_incompleto=False: excluye el año incompleto (dataset por defecto)
     """
     df = df_mag_raw.copy()
     df.columns = [c.strip() for c in df.columns]
@@ -119,11 +120,12 @@ def procesar_mag(df_mag_raw):
     df["mes_num"] = df["CP_MES"].map(meses)
     df["CP_GENERO"] = df["CP_GENERO"].fillna("N/D")
 
-    # Excluimos año incompleto actual
-    anio_max = df["CP_ANIO"].max()
-    meses_anio_max = df[df["CP_ANIO"] == anio_max]["mes_num"].max()
-    if meses_anio_max < 12:
-        df = df[df["CP_ANIO"] < anio_max].copy()
+    # Solo excluimos el año incompleto si estamos usando el dataset por defecto
+    if not incluir_anio_incompleto:
+        anio_max = df["CP_ANIO"].max()
+        meses_anio_max = df[df["CP_ANIO"] == anio_max]["mes_num"].max()
+        if meses_anio_max < 12:
+            df = df[df["CP_ANIO"] < anio_max].copy()
 
     return df.dropna(subset=["CP_VALOR_USD"])
 
@@ -210,10 +212,12 @@ else:
 # PROCESAMIENTO
 # ============================================================
 with st.spinner("Procesando datos..."):
-    df_nbi  = cargar_nbi()
+    df_nbi   = cargar_nbi()
     gdf_prov = cargar_geojson()
-    df_mag  = procesar_mag(df_mag_raw)
-    ranking = calcular_ranking(df_mag, df_nbi)
+    # Si el usuario subió un archivo incluimos todos los años (incluyendo 2026)
+    # Si usamos el dataset por defecto excluimos el año incompleto
+    df_mag   = procesar_mag(df_mag_raw, incluir_anio_incompleto=archivo_mag is not None)
+    ranking  = calcular_ranking(df_mag, df_nbi)
 
     # Unimos ranking con GeoDataFrame
     gdf = gdf_prov.merge(
