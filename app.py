@@ -320,7 +320,7 @@ with tab2:
         elif idx <= 18:
             return ["background-color: #fff3cc; color: black"] * len(row)
         else:
-            return ["background-color: #cce5ff; color: black"] * len(row)
+            return ["background-color: #ccedcc; color: black"] * len(row)
 
     st.dataframe(
         tabla.style.apply(color_fila, axis=1).format({
