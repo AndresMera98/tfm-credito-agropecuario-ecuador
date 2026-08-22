@@ -313,14 +313,14 @@ with tab2:
     ]
 
     # Coloreamos por prioridad
-    def color_fila(row):
-    idx = row.name
-    if idx <= 6:
-        return ["background-color: #ffcccc; color: black"] * len(row)
-    elif idx <= 18:
-        return ["background-color: #fff3cc; color: black"] * len(row)
-    else:
-        return ["background-color: #cce5ff; color: black"] * len(row)
+        def color_fila(row):
+        idx = row.name
+        if idx <= 6:
+            return ["background-color: #ffcccc; color: black"] * len(row)
+        elif idx <= 18:
+            return ["background-color: #fff3cc; color: black"] * len(row)
+        else:
+            return ["background-color: #cce5ff; color: black"] * len(row)
 
     st.dataframe(
         tabla.style.apply(color_fila, axis=1).format({
