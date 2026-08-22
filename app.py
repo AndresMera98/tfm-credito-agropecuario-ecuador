@@ -206,7 +206,7 @@ else:
             sep=";"
         )
     df_mag_raw = cargar_mag_drive(DRIVE_FILE_ID)
-    st.sidebar.info("📌 Usando dataset por defecto (MAG mayo 2026)")
+    st.sidebar.info("📌 Usando dataset por defecto (MAG 2013–2025)")
 
 # ============================================================
 # PROCESAMIENTO
