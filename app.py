@@ -186,15 +186,24 @@ archivo_mag = st.sidebar.file_uploader(
     help="Formato: mag_creditopublicoagropecuario_XXXXXX.csv"
 )
 
-# Si no hay archivo subido, usamos el CSV por defecto
+# ID del archivo CSV del MAG en Google Drive
+DRIVE_FILE_ID = "1pfX8zSG-uXM9s7kkhwoVf09sSJ9maGNe"
+
 if archivo_mag is not None:
+    # Si el usuario sube un archivo nuevo, lo usamos directamente
     df_mag_raw = pd.read_csv(archivo_mag, encoding="utf-8-sig", sep=";")
     st.sidebar.success(f"✅ Archivo cargado: {len(df_mag_raw):,} registros")
 else:
-    df_mag_raw = pd.read_csv(
-        "mag_creditopublicoagropecuario_2026mayo.csv",
-        encoding="utf-8-sig", sep=";"
-    )
+    # Si no, descargamos el CSV por defecto desde Google Drive
+    @st.cache_data
+    def cargar_mag_drive(file_id):
+        url = f"https://drive.google.com/uc?export=download&id={file_id}"
+        r = requests.get(url)
+        return pd.read_csv(
+            io.StringIO(r.content.decode("utf-8-sig")),
+            sep=";"
+        )
+    df_mag_raw = cargar_mag_drive(DRIVE_FILE_ID)
     st.sidebar.info("📌 Usando dataset por defecto (MAG mayo 2026)")
 
 # ============================================================
