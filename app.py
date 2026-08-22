@@ -250,21 +250,29 @@ with tab1:
         "per cápita — son las más prioritarias para banca de desarrollo."
     )
 
-    fig, ax = plt.subplots(figsize=(12, 9))
-    gdf.plot(
-        column="indice_brecha",
-        cmap="YlOrRd",
-        linewidth=0.8,
-        edgecolor="white",
-        legend=True,
-        legend_kwds={
-            "label": "Índice de brecha\n(mayor = más prioritaria)",
-            "shrink": 0.6
-        },
-        ax=ax,
-        missing_kwds={"color": "lightgrey"}
-    )
-    for _, row in gdf.iterrows():
+    fig, axes = plt.subplots(1, 2, figsize=(14, 9),
+                          gridspec_kw={"width_ratios": [1, 3.5]})
+ax_gal = axes[0]   # panel izquierdo: solo Galápagos
+ax     = axes[1]   # panel derecho: Ecuador continental
+
+# Galápagos separado
+gdf_gal  = gdf[gdf["province"] == "Galápagos"]
+gdf_cont = gdf[gdf["province"] != "Galápagos"]
+
+gdf_gal.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
+             edgecolor="white", ax=ax_gal, vmin=0.3, vmax=0.9,
+             missing_kwds={"color": "lightgrey"})
+ax_gal.set_axis_off()
+ax_gal.set_title("Galápagos", fontsize=8)
+
+gdf_cont.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
+              edgecolor="white", legend=True, ax=ax,
+              legend_kwds={"label": "Índice de brecha\n(mayor = más prioritaria)",
+                           "shrink": 0.6},
+              vmin=0.3, vmax=0.9,
+              missing_kwds={"color": "lightgrey"})
+
+    for _, row in gdf_cont.iterrows():
         if pd.notna(row.get("indice_brecha")) and pd.notna(row.get("rep_x")):
             ax.annotate(
                 f"{row['province']}\n({row['indice_brecha']:.2f})",
@@ -303,13 +311,13 @@ with tab2:
 
     # Coloreamos por prioridad
     def color_fila(row):
-        idx = row.name
-        if idx <= 6:
-            return ["background-color: #ffcccc"] * len(row)
-        elif idx <= 18:
-            return ["background-color: #fff3cc"] * len(row)
-        else:
-            return ["background-color: #cce5ff"] * len(row)
+    idx = row.name
+    if idx <= 6:
+        return ["background-color: #ffcccc; color: black"] * len(row)
+    elif idx <= 18:
+        return ["background-color: #fff3cc; color: black"] * len(row)
+    else:
+        return ["background-color: #cce5ff; color: black"] * len(row)
 
     st.dataframe(
         tabla.style.apply(color_fila, axis=1).format({
