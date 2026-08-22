@@ -260,7 +260,6 @@ with tab1:
         "Provincias en **rojo oscuro** tienen alta pobreza (NBI) y bajo crédito "
         "per cápita — son las más prioritarias para banca de desarrollo."
     )
-
     fig, axes = plt.subplots(1, 2, figsize=(14, 9),
                               gridspec_kw={"width_ratios": [1, 3.5]})
     ax_gal = axes[0]
@@ -269,15 +268,23 @@ with tab1:
     gdf_gal  = gdf[gdf["province"] == "Galápagos"]
     gdf_cont = gdf[gdf["province"] != "Galápagos"]
 
+    # Panel izquierdo: Galápagos
     gdf_gal.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
                  edgecolor="white", ax=ax_gal, vmin=0.3, vmax=0.9,
                  missing_kwds={"color": "lightgrey"})
     ax_gal.set_axis_off()
-    val_gal = gdf_gal["indice_brecha"].values[0] if len(gdf_gal) > 0 else 0
-    ax_gal.set_title(
-        f"Galápagos\nÍndice: {val_gal:.2f}",
-        fontsize=9, fontweight="bold")
 
+    # Etiqueta centrada sobre el mapa de Galápagos
+    val_gal = gdf_gal["indice_brecha"].values[0] if len(gdf_gal) > 0 else 0
+    ax_gal.text(
+        0.5, 1.02,
+        f"Galápagos\nÍndice: {val_gal:.2f}",
+        transform=ax_gal.transAxes,
+        ha="center", va="bottom",
+        fontsize=9, fontweight="bold"
+    )
+
+    # Panel derecho: Ecuador continental
     gdf_cont.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
                   edgecolor="white", legend=True, ax=ax,
                   legend_kwds={"label": "Índice de brecha\n(mayor = más prioritaria)",
@@ -285,18 +292,24 @@ with tab1:
                   vmin=0.3, vmax=0.9,
                   missing_kwds={"color": "lightgrey"})
 
+    # Etiquetas de provincias: más grandes, sin negrilla
     for _, row in gdf_cont.iterrows():
         if pd.notna(row.get("indice_brecha")) and pd.notna(row.get("rep_x")):
             ax.annotate(
                 f"{row['province']}\n({row['indice_brecha']:.2f})",
                 xy=(row["rep_x"], row["rep_y"]),
-                ha="center", fontsize=5, color="black"
+                ha="center",
+                fontsize=7,
+                fontweight="normal",
+                color="black"
             )
 
     ax.set_axis_off()
+    # Título más grande y en negrilla
     ax.set_title(
         f"Crédito público agropecuario — Ecuador {min(anios_disponibles)}–{max(anios_disponibles)}",
-        fontsize=12
+        fontsize=14,
+        fontweight="bold"
     )
     plt.tight_layout()
     st.pyplot(fig)
