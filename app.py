@@ -274,13 +274,13 @@ with tab1:
                  missing_kwds={"color": "lightgrey"})
     ax_gal.set_axis_off()
 
-    # Etiqueta centrada sobre el mapa de Galápagos
+    # Etiqueta centrada EN el mapa de Galápagos (no arriba)
     val_gal = gdf_gal["indice_brecha"].values[0] if len(gdf_gal) > 0 else 0
     ax_gal.text(
-        0.5, 1.02,
+        0.5, 0.5,
         f"Galápagos\nÍndice: {val_gal:.2f}",
         transform=ax_gal.transAxes,
-        ha="center", va="bottom",
+        ha="center", va="center",
         fontsize=9, fontweight="bold"
     )
 
@@ -288,11 +288,18 @@ with tab1:
     gdf_cont.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
                   edgecolor="white", legend=True, ax=ax,
                   legend_kwds={"label": "Índice de brecha\n(mayor = más prioritaria)",
-                               "shrink": 0.6},
+                               "shrink": 0.6,
+                               "format": "%.2f"},
                   vmin=0.3, vmax=0.9,
                   missing_kwds={"color": "lightgrey"})
 
-    # Etiquetas de provincias: más grandes, sin negrilla
+    # Título de la barra de color en negrilla e igual al título principal
+    ax.get_figure().axes[-1].set_ylabel(
+        "Índice de brecha\n(mayor = más prioritaria)",
+        fontsize=12, fontweight="bold"
+    )
+
+    # Etiquetas de provincias: mismo estilo que Galápagos (negrilla)
     for _, row in gdf_cont.iterrows():
         if pd.notna(row.get("indice_brecha")) and pd.notna(row.get("rep_x")):
             ax.annotate(
@@ -300,7 +307,7 @@ with tab1:
                 xy=(row["rep_x"], row["rep_y"]),
                 ha="center",
                 fontsize=7,
-                fontweight="normal",
+                fontweight="bold",
                 color="black"
             )
 
