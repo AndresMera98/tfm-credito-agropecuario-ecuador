@@ -243,6 +243,9 @@ tab1, tab2, tab3 = st.tabs([
 # ============================================================
 # PESTAÑA 1: MAPA
 # ============================================================
+# ============================================================
+# PESTAÑA 1: MAPA
+# ============================================================
 with tab1:
     st.subheader("Índice de brecha de atención por provincia")
     st.markdown(
@@ -251,26 +254,25 @@ with tab1:
     )
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 9),
-                          gridspec_kw={"width_ratios": [1, 3.5]})
-ax_gal = axes[0]   # panel izquierdo: solo Galápagos
-ax     = axes[1]   # panel derecho: Ecuador continental
+                              gridspec_kw={"width_ratios": [1, 3.5]})
+    ax_gal = axes[0]
+    ax     = axes[1]
 
-# Galápagos separado
-gdf_gal  = gdf[gdf["province"] == "Galápagos"]
-gdf_cont = gdf[gdf["province"] != "Galápagos"]
+    gdf_gal  = gdf[gdf["province"] == "Galápagos"]
+    gdf_cont = gdf[gdf["province"] != "Galápagos"]
 
-gdf_gal.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
-             edgecolor="white", ax=ax_gal, vmin=0.3, vmax=0.9,
-             missing_kwds={"color": "lightgrey"})
-ax_gal.set_axis_off()
-ax_gal.set_title("Galápagos", fontsize=8)
+    gdf_gal.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
+                 edgecolor="white", ax=ax_gal, vmin=0.3, vmax=0.9,
+                 missing_kwds={"color": "lightgrey"})
+    ax_gal.set_axis_off()
+    ax_gal.set_title("Galápagos", fontsize=8)
 
-gdf_cont.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
-              edgecolor="white", legend=True, ax=ax,
-              legend_kwds={"label": "Índice de brecha\n(mayor = más prioritaria)",
-                           "shrink": 0.6},
-              vmin=0.3, vmax=0.9,
-              missing_kwds={"color": "lightgrey"})
+    gdf_cont.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
+                  edgecolor="white", legend=True, ax=ax,
+                  legend_kwds={"label": "Índice de brecha\n(mayor = más prioritaria)",
+                               "shrink": 0.6},
+                  vmin=0.3, vmax=0.9,
+                  missing_kwds={"color": "lightgrey"})
 
     for _, row in gdf_cont.iterrows():
         if pd.notna(row.get("indice_brecha")) and pd.notna(row.get("rep_x")):
@@ -279,14 +281,15 @@ gdf_cont.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
                 xy=(row["rep_x"], row["rep_y"]),
                 ha="center", fontsize=5, color="black"
             )
+
     ax.set_axis_off()
     ax.set_title(
         f"Crédito público agropecuario — Ecuador {min(anios_disponibles)}–{max(anios_disponibles)}",
         fontsize=12
     )
+    plt.tight_layout()
     st.pyplot(fig)
     plt.close()
-
 # ============================================================
 # PESTAÑA 2: RANKING
 # ============================================================
