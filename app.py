@@ -226,8 +226,16 @@ with st.spinner("Procesando datos..."):
         gdf.loc[idx_g[0], "rep_y"] = -2.20
 
 anios_disponibles = sorted(df_mag["CP_ANIO"].unique())
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 📖 ¿Cómo interpretar el índice?")
 st.sidebar.markdown(
-    f"**Período analizado:** {min(anios_disponibles)}–{max(anios_disponibles)}"
+    "El **índice de brecha** combina dos factores con igual peso:\n\n"
+    "- 🔴 **NBI 2022**: proporción de población pobre por necesidades básicas insatisfechas\n"
+    "- 💰 **Crédito per cápita**: USD de crédito público recibido por habitante (2013-2025)\n\n"
+    "Un índice de **0.85** significa que la provincia combina **alta pobreza** y "
+    "**bajo crédito per cápita** — es la más prioritaria para banca de desarrollo.\n\n"
+    "Un índice de **0.29** significa que la provincia está **bien atendida** en "
+    "relación a su nivel de pobreza."
 )
 st.sidebar.markdown(f"**Registros procesados:** {len(df_mag):,}")
 
@@ -265,7 +273,10 @@ with tab1:
                  edgecolor="white", ax=ax_gal, vmin=0.3, vmax=0.9,
                  missing_kwds={"color": "lightgrey"})
     ax_gal.set_axis_off()
-    ax_gal.set_title("Galápagos", fontsize=8)
+    val_gal = gdf_gal["indice_brecha"].values[0] if len(gdf_gal) > 0 else 0
+    ax_gal.set_title(
+        f"Galápagos\nÍndice: {val_gal:.2f}",
+        fontsize=9, fontweight="bold")
 
     gdf_cont.plot(column="indice_brecha", cmap="YlOrRd", linewidth=0.8,
                   edgecolor="white", legend=True, ax=ax,
@@ -381,11 +392,17 @@ with tab3:
 
     # Métrica resumen
     ultimo = pivot.iloc[-1]
+    st.info(
+        f"📈 **Hallazgo principal**: en {int(pivot.iloc[0]['CP_ANIO'])} las mujeres recibían el "
+        f"{pivot.iloc[0]['pct_femenino']}% del crédito agropecuario. En {int(ultimo['CP_ANIO'])} "
+        f"llegaron al {ultimo['pct_femenino']}% — una mejora de "
+        f"{ultimo['pct_femenino'] - pivot.iloc[0]['pct_femenino']:.1f} puntos porcentuales en 12 años. "
+        f"El crédito público agropecuario avanza hacia la paridad de género (50%).")
+
     st.metric(
         label=f"% crédito femenino en {int(ultimo['CP_ANIO'])}",
         value=f"{ultimo['pct_femenino']}%",
-        delta=f"{(ultimo['pct_femenino'] - pivot.iloc[0]['pct_femenino']):.1f}pp vs {int(pivot.iloc[0]['CP_ANIO'])}"
-    )
+        delta=f"{(ultimo['pct_femenino'] - pivot.iloc[0]['pct_femenino']):.1f}pp vs {int(pivot.iloc[0]['CP_ANIO'])}")
 
 st.markdown("---")
 st.markdown(
