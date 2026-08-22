@@ -313,7 +313,7 @@ with tab2:
     ]
 
     # Coloreamos por prioridad
-        def color_fila(row):
+    def color_fila(row):
         idx = row.name
         if idx <= 6:
             return ["background-color: #ffcccc; color: black"] * len(row)
