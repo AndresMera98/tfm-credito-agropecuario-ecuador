@@ -386,6 +386,10 @@ with tab3:
     # Calculamos brecha de género
     df_personas = df_mag[df_mag["CP_GENERO"].isin(["Femenino", "Masculino"])].copy()
 
+    # Años dinámicos — se actualizan con cada nuevo CSV
+    anio_min = int(df_personas["CP_ANIO"].min())
+    anio_max = int(df_personas["CP_ANIO"].max())
+
     genero_anual = df_personas.groupby(["CP_ANIO", "CP_GENERO"]).agg(
         monto=("CP_VALOR_USD", "sum")
     ).reset_index()
@@ -410,7 +414,11 @@ with tab3:
     ax2.set_ylim(25, 55)
     ax2.set_xlabel("Año")
     ax2.set_ylabel("% crédito recibido por mujeres")
-    ax2.set_title("Evolución del acceso femenino al crédito (personas naturales)")
+    # Título dinámico
+    ax2.set_title(
+        f"Evolución del acceso femenino al crédito {anio_min}-{anio_max} "
+        f"(personas naturales)"
+    )
     ax2.legend()
     st.pyplot(fig2)
     plt.close()
@@ -421,7 +429,8 @@ with tab3:
         f"📈 **Hallazgo principal**: en {int(pivot.iloc[0]['CP_ANIO'])} las mujeres recibían el "
         f"{pivot.iloc[0]['pct_femenino']}% del crédito agropecuario. En {int(ultimo['CP_ANIO'])} "
         f"llegaron al {ultimo['pct_femenino']}% — una mejora de "
-        f"{ultimo['pct_femenino'] - pivot.iloc[0]['pct_femenino']:.1f} puntos porcentuales en 12 años. "
+        f"{ultimo['pct_femenino'] - pivot.iloc[0]['pct_femenino']:.1f} puntos porcentuales "
+        f"en {anio_max - anio_min} años. "
         f"El crédito público agropecuario avanza hacia la paridad de género (50%)."
     )
     st.metric(
@@ -435,10 +444,11 @@ with tab3:
     # ── Gráfico 2: Brecha por provincia ──
     st.subheader("Brecha de género por provincia")
     st.markdown(
-        "Porcentaje del crédito recibido por mujeres (personas naturales) "
-        "en el período 2013-2025. Línea punteada = paridad (50%)."
+        f"Porcentaje del crédito recibido por mujeres (personas naturales) "
+        f"en el período {anio_min}-{anio_max}. Línea punteada = paridad (50%)."
     )
 
+    # Calculamos brecha por provincia
     genero_prov = df_personas.groupby(["DPA_DESPRO", "CP_GENERO"]).agg(
         monto=("CP_VALOR_USD", "sum")
     ).reset_index()
@@ -454,6 +464,7 @@ with tab3:
     ).round(1)
     prov_pivot = prov_pivot.sort_values("pct_femenino", ascending=True)
 
+    # Colores por nivel de brecha
     colores_prov = [
         "tomato"   if p < 35 else
         "gold"     if p < 42 else
@@ -470,6 +481,7 @@ with tab3:
     )
     ax3.axvline(x=50, color="gray", linestyle="--", linewidth=1.2)
 
+    # Etiquetas al final de cada barra
     for i, row in enumerate(prov_pivot.itertuples()):
         ax3.text(
             row.pct_femenino + 0.3, i,
@@ -477,6 +489,7 @@ with tab3:
             va="center", fontsize=8
         )
 
+    # Leyenda de colores
     from matplotlib.patches import Patch
     leyenda = [
         Patch(color="tomato",  alpha=0.85, label="Brecha severa (<35%)"),
@@ -485,14 +498,16 @@ with tab3:
     ]
     ax3.legend(handles=leyenda, fontsize=8, loc="lower right")
     ax3.set_xlabel("% del crédito recibido por mujeres", fontsize=10)
+    # Título dinámico
     ax3.set_title(
-        "Brecha de género por provincia (% crédito femenino 2013-2025)",
+        f"Brecha de género por provincia "
+        f"(% crédito femenino {anio_min}-{anio_max})",
         fontsize=12
     )
     st.pyplot(fig3)
     plt.close()
 
-# Pie de página — fuera de los tabs
+# ── Pie de página — fuera de todos los tabs ──
 st.markdown("---")
 st.markdown(
     "**Fuentes**: MAG — Crédito público agropecuario (2026) | "
